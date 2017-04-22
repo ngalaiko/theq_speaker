@@ -4,19 +4,19 @@ import (
 	"../speaker"
 )
 
-type TheqAsk interface {
+type TheqSpeak interface {
 	Start()
 }
 
-type theqAsk struct {
+type theqSpeak struct {
 	speaker speaker.Speaker
 
 	queue chan *Question
 	seen  map[int64]bool
 }
 
-func New(speaker speaker.Speaker) TheqAsk {
-	return &theqAsk{
+func New(speaker speaker.Speaker) TheqSpeak {
+	return &theqSpeak{
 		speaker: speaker,
 
 		queue: make(chan *Question),
@@ -24,7 +24,7 @@ func New(speaker speaker.Speaker) TheqAsk {
 	}
 }
 
-func (t *theqAsk) Start() {
+func (t *theqSpeak) Start() {
 	go t.questionsLoop()
 
 	for {
@@ -37,7 +37,7 @@ func (t *theqAsk) Start() {
 	}
 }
 
-func (t *theqAsk) readQuestion(question *Question) error {
+func (t *theqSpeak) readQuestion(question *Question) error {
 	gender := speaker.Gender(question.Account.Gender)
 
 	return t.speaker.Say(question.Title, gender)

@@ -15,7 +15,7 @@ const (
 	apiUrl         = "https://api.thequestion.ru/api"
 )
 
-func (t *theqAsk) questionsLoop() {
+func (t *theqSpeak) questionsLoop() {
 	for {
 		if err := t.fetchQuestions(questionsLimit); err != nil {
 			panic(err)
@@ -25,7 +25,7 @@ func (t *theqAsk) questionsLoop() {
 	}
 }
 
-func (t *theqAsk) fetchQuestions(limit int32) error {
+func (t *theqSpeak) fetchQuestions(limit int32) error {
 	questions, err := t.getQuestions(limit)
 	if err != nil {
 		return err
@@ -48,7 +48,7 @@ func (t *theqAsk) fetchQuestions(limit int32) error {
 	return nil
 }
 
-func (t *theqAsk) getQuestions(limit int32) ([]*Question, error) {
+func (t *theqSpeak) getQuestions(limit int32) ([]*Question, error) {
 	requestUrl := apiUrl +
 		"/questions/query" +
 		"?lang=%s" +
@@ -66,7 +66,7 @@ func (t *theqAsk) getQuestions(limit int32) ([]*Question, error) {
 	return response, nil
 }
 
-func (t *theqAsk) httpGet(url string, responsePointer interface{}) error {
+func (t *theqSpeak) httpGet(url string, responsePointer interface{}) error {
 	response, err := http.Get(url)
 	if err != nil {
 		return err
