@@ -1,8 +1,9 @@
-package reader
+package fetcher
 
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ngalayko/theq_ask/types"
 	"io/ioutil"
 	"net/http"
 	"sort"
@@ -15,7 +16,25 @@ const (
 	apiURL         = "https://api.thequestion.ru/api"
 )
 
-func (t *reader) fetchLoop() {
+type Fetcher interface {
+	FetchLoop()
+}
+
+type fetcher struct {
+	queue chan types.Text
+
+	seen map[int64]bool
+}
+
+func New(queue chan types.Text) Fetcher {
+	return &fetcher{
+		queue: queue,
+
+		seen: map[int64]bool{},
+	}
+}
+
+func (t *fetcher) FetchLoop() {
 	defer func() {
 		recover()
 	}()
@@ -29,7 +48,7 @@ func (t *reader) fetchLoop() {
 	}
 }
 
-func (t *reader) fetchNext(limit int32) error {
+func (t *fetcher) fetchNext(limit int32) error {
 	questions, err := t.getQuestions(limit)
 	if err != nil {
 		return err
@@ -52,25 +71,22 @@ func (t *reader) fetchNext(limit int32) error {
 	return nil
 }
 
-func (t *reader) getQuestions(limit int32) ([]*Question, error) {
+func (t *fetcher) getQuestions(limit int32) ([]*types.Question, error) {
 	requestURL := apiURL +
 		"/questions/query" +
 		"?lang=ru" +
 		"&sort=date" +
 		"&limit=%d"
 
-	response := []*Question{}
-	if err := t.httpGet(
-		fmt.Sprintf(requestURL, limit),
-		&response,
-	); err != nil {
+	response := []*types.Question{}
+	if err := t.httpGet(fmt.Sprintf(requestURL, limit), &response); err != nil {
 		return nil, err
 	}
 
 	return response, nil
 }
 
-func (t *reader) httpGet(url string, responsePointer interface{}) error {
+func (t *fetcher) httpGet(url string, responsePointer interface{}) error {
 	response, err := http.Get(url)
 	if err != nil {
 		return err

@@ -1,4 +1,4 @@
-package speaker
+package reader
 
 import (
 	"math/rand"

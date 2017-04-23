@@ -1,45 +1,109 @@
 package reader
 
 import (
-	"github.com/ngalayko/theq_ask/speaker"
+	"fmt"
+	"github.com/ngalayko/theq_ask/types"
+	"io"
+	"math/rand"
+	"net/http"
+	"net/url"
+	"os"
+	"os/exec"
+	"time"
+)
+
+const (
+	apiURL = "https://tts.voicetech.yandex.net/generate"
+
+	fileNameLength = 5
+	fileFormat     = "mp3"
+)
+
+var (
+	maleVoices   = []string{"zahar", "ermil"}
+	femaleVoices = []string{"jane", "oksana", "alyss", "omazh"}
 )
 
 type Reader interface {
-	Read()
+	ReadLoop()
 }
 
 type reader struct {
-	speaker speaker.Speaker
-
-	queue chan *Question
-	seen  map[int64]bool
+	apiKey string
+	queue  chan types.Text
 }
 
-func New(speaker speaker.Speaker) Reader {
+func New(apiKey string, queue chan types.Text) Reader {
 	return &reader{
-		speaker: speaker,
-
-		queue: make(chan *Question),
-		seen:  map[int64]bool{},
+		apiKey: apiKey,
+		queue:  queue,
 	}
 }
 
-func (t *reader) Read() {
+func (t *reader) ReadLoop() {
 	defer func() {
 		recover()
 	}()
 
-	go t.fetchLoop()
-
 	for question := range t.queue {
-		if err := t.readQuestion(question); err != nil {
+		if err := t.read(question.String(), question.Gender().String()); err != nil {
 			panic(err)
 		}
 	}
 }
 
-func (t *reader) readQuestion(question *Question) error {
-	gender := speaker.Gender(question.Account.Gender)
+func (t *reader) read(text string, gender string) error {
+	requestURL := apiURL +
+		"?key=" + url.QueryEscape(t.apiKey) +
+		"&text=" + url.QueryEscape(text) +
+		"&format=" + fileFormat +
+		"&quality=hi" +
+		"&lang=ru" +
+		"&speaker=" + t.chooseVoice(gender)
 
-	return t.speaker.Say(question.Title, gender)
+	randomString := RandStringBytesMaskImprSrc(fileNameLength)
+	fileName := fmt.Sprintf("%v.%v", randomString, fileFormat)
+	if err := t.downloadFromURL(requestURL, fileName); err != nil {
+		return err
+	}
+	defer os.Remove(fileName)
+
+	if _, err := exec.Command("mpg123", "-q", fileName).CombinedOutput(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (t *reader) chooseVoice(gender string) string {
+	rand.Seed(time.Now().Unix())
+
+	switch gender {
+	case "female":
+		i := rand.Int() % len(femaleVoices)
+		return femaleVoices[i]
+	default:
+		i := rand.Int() % len(maleVoices)
+		return maleVoices[i]
+	}
+}
+
+func (t *reader) downloadFromURL(url string, fileName string) error {
+	file, err := os.Create(fileName)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	response, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+
+	if _, err := io.Copy(file, response.Body); err != nil {
+		return err
+	}
+
+	return nil
 }

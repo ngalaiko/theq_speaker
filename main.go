@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/ngalayko/theq_ask/reader"
 	"github.com/ngalayko/theq_ask/speaker"
 )
 
@@ -18,7 +17,6 @@ func main() {
 		return
 	}
 
-	speaker := speaker.New(*key)
-	reader := reader.New(speaker)
-	reader.Read()
+	s := speaker.New(*key)
+	s.Start()
 }
