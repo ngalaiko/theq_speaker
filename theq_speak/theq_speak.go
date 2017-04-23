@@ -1,7 +1,7 @@
 package theq_speak
 
 import (
-	"../speaker"
+	"github.com/ngalayko/theq_ask/speaker"
 )
 
 type TheqSpeak interface {
@@ -25,9 +25,13 @@ func New(speaker speaker.Speaker) TheqSpeak {
 }
 
 func (t *theqSpeak) Start() {
+	defer func() {
+		recover()
+	}()
+
 	go t.questionsLoop()
 
-	for question := range t.queue{
+	for question := range t.queue {
 		if err := t.readQuestion(question); err != nil {
 			panic(err)
 		}

@@ -1,32 +1,24 @@
 package main
 
 import (
-	"./speaker"
-	"./theq_speak"
-	"gopkg.in/yaml.v2"
-	"io/ioutil"
+	"flag"
+	"fmt"
+	"github.com/ngalayko/theq_ask/speaker"
+	"github.com/ngalayko/theq_ask/theq_speak"
 )
 
-const (
-	configFileName = "config.yaml"
+var (
+	key = flag.String("key", "", "Yandex SpeechKit API key")
 )
 
 func main() {
-	config := theq_speak.Config{}
-	if err := readConfig(&config); err != nil {
-		panic(err)
+	flag.Parse()
+	if len(*key) == 0 {
+		fmt.Println("You should use -key flag")
+		return
 	}
 
-	speaker := speaker.New(config.ApiKey)
+	speaker := speaker.New(*key)
 	reader := theq_speak.New(speaker)
 	reader.Start()
-}
-
-func readConfig(config *theq_speak.Config) error {
-	bytes, err := ioutil.ReadFile(configFileName)
-	if err != nil {
-		return err
-	}
-
-	return yaml.Unmarshal(bytes, config)
 }

@@ -12,10 +12,14 @@ import (
 const (
 	questionsLimit = 5
 	timeout        = 5 * time.Second
-	apiUrl         = "https://api.thequestion.ru/api"
+	apiURL         = "https://api.thequestion.ru/api"
 )
 
 func (t *theqSpeak) questionsLoop() {
+	defer func() {
+		recover()
+	}()
+
 	for {
 		if err := t.fetchQuestions(questionsLimit); err != nil {
 			panic(err)
@@ -32,15 +36,15 @@ func (t *theqSpeak) fetchQuestions(limit int32) error {
 	}
 
 	sort.Slice(questions, func(i, j int) bool {
-		return questions[i].Id > questions[j].Id
+		return questions[i].ID > questions[j].ID
 	})
 
 	for _, question := range questions {
-		if t.seen[question.Id] {
+		if t.seen[question.ID] {
 			continue
 		}
 
-		t.seen[question.Id] = true
+		t.seen[question.ID] = true
 
 		t.queue <- question
 	}
@@ -49,7 +53,7 @@ func (t *theqSpeak) fetchQuestions(limit int32) error {
 }
 
 func (t *theqSpeak) getQuestions(limit int32) ([]*Question, error) {
-	requestUrl := apiUrl +
+	requestURL := apiURL +
 		"/questions/query" +
 		"?lang=%s" +
 		"&sort=%s" +
@@ -57,7 +61,7 @@ func (t *theqSpeak) getQuestions(limit int32) ([]*Question, error) {
 
 	response := []*Question{}
 	if err := t.httpGet(
-		fmt.Sprintf(requestUrl, "ru", "date", limit),
+		fmt.Sprintf(requestURL, "ru", "date", limit),
 		&response,
 	); err != nil {
 		return nil, err

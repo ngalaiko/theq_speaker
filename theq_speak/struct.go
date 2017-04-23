@@ -1,11 +1,11 @@
 package theq_speak
 
 type Config struct {
-	ApiKey string `yaml:"ApiKey"`
+	APIKey string `yaml:"ApiKey"`
 }
 
 type Question struct {
-	Id      int64   `json:"id"`
+	ID      int64   `json:"id"`
 	Title   string  `json:"title"`
 	Account Account `json:"account"`
 }

@@ -48,7 +48,7 @@ func (t *speaker) Say(text string, gender Gender) error {
 
 	randomString := RandStringBytesMaskImprSrc(fileNameLength)
 	fileName := fmt.Sprintf("%v.%v", randomString, fileFormat)
-	if err := t.downloadFromUrl(requestURL, fileName); err != nil {
+	if err := t.downloadFromURL(requestURL, fileName); err != nil {
 		return err
 	}
 	defer os.Remove(fileName)
@@ -73,7 +73,7 @@ func (t *speaker) chooseVoice(gender Gender) string {
 	}
 }
 
-func (t *speaker) downloadFromUrl(url string, fileName string) error {
+func (t *speaker) downloadFromURL(url string, fileName string) error {
 	file, err := os.Create(fileName)
 	if err != nil {
 		return err

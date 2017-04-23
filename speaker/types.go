@@ -7,12 +7,3 @@ const (
 	GenderMale    Gender = "male"
 	GenderFemale  Gender = "female"
 )
-
-func (t Gender) Clean() Gender {
-	switch t {
-	case GenderMale, GenderFemale:
-		return t
-	default:
-		return GenderInvalid
-	}
-}
