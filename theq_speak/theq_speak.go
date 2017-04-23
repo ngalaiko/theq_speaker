@@ -27,12 +27,9 @@ func New(speaker speaker.Speaker) TheqSpeak {
 func (t *theqSpeak) Start() {
 	go t.questionsLoop()
 
-	for {
-		select {
-		case question := <-t.queue:
-			if err := t.readQuestion(question); err != nil {
-				panic(err)
-			}
+	for question := range t.queue{
+		if err := t.readQuestion(question); err != nil {
+			panic(err)
 		}
 	}
 }
