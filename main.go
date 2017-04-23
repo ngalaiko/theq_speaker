@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/ngalayko/theq_ask/reader"
 	"github.com/ngalayko/theq_ask/speaker"
-	"github.com/ngalayko/theq_ask/theq_speak"
 )
 
 var (
@@ -19,6 +19,6 @@ func main() {
 	}
 
 	speaker := speaker.New(*key)
-	reader := theq_speak.New(speaker)
-	reader.Start()
+	reader := reader.New(speaker)
+	reader.Read()
 }

@@ -1,22 +1,22 @@
-package theq_speak
+package reader
 
 import (
 	"github.com/ngalayko/theq_ask/speaker"
 )
 
-type TheqSpeak interface {
-	Start()
+type Reader interface {
+	Read()
 }
 
-type theqSpeak struct {
+type reader struct {
 	speaker speaker.Speaker
 
 	queue chan *Question
 	seen  map[int64]bool
 }
 
-func New(speaker speaker.Speaker) TheqSpeak {
-	return &theqSpeak{
+func New(speaker speaker.Speaker) Reader {
+	return &reader{
 		speaker: speaker,
 
 		queue: make(chan *Question),
@@ -24,12 +24,12 @@ func New(speaker speaker.Speaker) TheqSpeak {
 	}
 }
 
-func (t *theqSpeak) Start() {
+func (t *reader) Read() {
 	defer func() {
 		recover()
 	}()
 
-	go t.questionsLoop()
+	go t.fetchLoop()
 
 	for question := range t.queue {
 		if err := t.readQuestion(question); err != nil {
@@ -38,7 +38,7 @@ func (t *theqSpeak) Start() {
 	}
 }
 
-func (t *theqSpeak) readQuestion(question *Question) error {
+func (t *reader) readQuestion(question *Question) error {
 	gender := speaker.Gender(question.Account.Gender)
 
 	return t.speaker.Say(question.Title, gender)

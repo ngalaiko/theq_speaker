@@ -1,4 +1,4 @@
-package theq_speak
+package reader
 
 import (
 	"encoding/json"
@@ -15,13 +15,13 @@ const (
 	apiURL         = "https://api.thequestion.ru/api"
 )
 
-func (t *theqSpeak) questionsLoop() {
+func (t *reader) fetchLoop() {
 	defer func() {
 		recover()
 	}()
 
 	for {
-		if err := t.fetchQuestions(questionsLimit); err != nil {
+		if err := t.fetchNext(questionsLimit); err != nil {
 			panic(err)
 		}
 
@@ -29,7 +29,7 @@ func (t *theqSpeak) questionsLoop() {
 	}
 }
 
-func (t *theqSpeak) fetchQuestions(limit int32) error {
+func (t *reader) fetchNext(limit int32) error {
 	questions, err := t.getQuestions(limit)
 	if err != nil {
 		return err
@@ -52,16 +52,16 @@ func (t *theqSpeak) fetchQuestions(limit int32) error {
 	return nil
 }
 
-func (t *theqSpeak) getQuestions(limit int32) ([]*Question, error) {
+func (t *reader) getQuestions(limit int32) ([]*Question, error) {
 	requestURL := apiURL +
 		"/questions/query" +
-		"?lang=%s" +
-		"&sort=%s" +
+		"?lang=ru" +
+		"&sort=date" +
 		"&limit=%d"
 
 	response := []*Question{}
 	if err := t.httpGet(
-		fmt.Sprintf(requestURL, "ru", "date", limit),
+		fmt.Sprintf(requestURL, limit),
 		&response,
 	); err != nil {
 		return nil, err
@@ -70,7 +70,7 @@ func (t *theqSpeak) getQuestions(limit int32) ([]*Question, error) {
 	return response, nil
 }
 
-func (t *theqSpeak) httpGet(url string, responsePointer interface{}) error {
+func (t *reader) httpGet(url string, responsePointer interface{}) error {
 	response, err := http.Get(url)
 	if err != nil {
 		return err

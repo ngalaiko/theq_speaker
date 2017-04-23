@@ -1,4 +1,4 @@
-package theq_speak
+package reader
 
 type Config struct {
 	APIKey string `yaml:"ApiKey"`
