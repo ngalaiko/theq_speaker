@@ -1,9 +1,9 @@
 package speaker
 
 import (
-	"github.com/ngalayko/theq_ask/fetcher"
-	"github.com/ngalayko/theq_ask/reader"
-	"github.com/ngalayko/theq_ask/types"
+	"github.com/ngalayko/theq_speaker/fetcher"
+	"github.com/ngalayko/theq_speaker/reader"
+	"github.com/ngalayko/theq_speaker/types"
 )
 
 type Speaker interface {

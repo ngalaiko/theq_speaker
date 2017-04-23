@@ -3,7 +3,7 @@ package fetcher
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ngalayko/theq_ask/types"
+	"github.com/ngalayko/theq_speaker/types"
 	"io/ioutil"
 	"net/http"
 	"sort"

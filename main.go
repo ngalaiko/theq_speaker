@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/ngalayko/theq_ask/speaker"
+	"github.com/ngalayko/theq_speaker/speaker"
 )
 
 var (

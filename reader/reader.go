@@ -2,7 +2,7 @@ package reader
 
 import (
 	"fmt"
-	"github.com/ngalayko/theq_ask/types"
+	"github.com/ngalayko/theq_speaker/types"
 	"io"
 	"math/rand"
 	"net/http"
