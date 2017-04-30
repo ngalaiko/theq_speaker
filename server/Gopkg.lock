@@ -1,0 +1,19 @@
+memo = "6ccaba3f4c2c9a7d17e41b997798def8d3a3e98986632a233c025aca45af428f"
+
+[[projects]]
+  name = "github.com/Sirupsen/logrus"
+  packages = ["."]
+  revision = "ba1b36c82c5e05c4f912a88eab0dcd91a171688f"
+  version = "v0.11.5"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/net"
+  packages = ["websocket"]
+  revision = "da118f7b8e5954f39d0d2130ab35d4bf0e3cb344"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/sys"
+  packages = ["unix"]
+  revision = "9ccfe848b9db8435a24c424abbc07a921adf1df5"
