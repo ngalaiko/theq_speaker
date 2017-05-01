@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/ngalayko/theq_speaker/server/speaker"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
 	"log"
 	"net/http"
-	"io/ioutil"
-	"gopkg.in/yaml.v2"
 )
 
 const (

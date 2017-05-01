@@ -57,7 +57,7 @@ func (t *sender) SendLoop() {
 				t.deleteClient(client)
 			}
 
-		case <- ticker.C:
+		case <-ticker.C:
 			message := <-t.queueToSend
 			t.broadcast(message)
 		}
@@ -88,7 +88,7 @@ func (t *sender) broadcast(message *types.Message) {
 	t.logger.Info("Mesage sended", logger.Fields{
 		"message": message.Text,
 		"success": success,
-		"fail": fail,
+		"fail":    fail,
 	})
 }
 
@@ -113,7 +113,7 @@ func (t *sender) deleteClient(client *types.Client) {
 
 func (t *sender) sayHello(client *types.Client) {
 	msg := &types.Message{
-		Text: "TheQuestion",
+		Text:   "TheQuestion",
 		Base64: t.helloBase64,
 	}
 

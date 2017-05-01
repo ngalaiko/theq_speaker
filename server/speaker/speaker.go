@@ -1,13 +1,13 @@
 package speaker
 
 import (
+	"github.com/gorilla/websocket"
 	"github.com/ngalayko/theq_speaker/server/converter"
 	"github.com/ngalayko/theq_speaker/server/fetcher"
 	"github.com/ngalayko/theq_speaker/server/logger"
 	"github.com/ngalayko/theq_speaker/server/sender"
 	"github.com/ngalayko/theq_speaker/server/types"
 	"net/http"
-	"github.com/gorilla/websocket"
 	"time"
 )
 
@@ -31,9 +31,9 @@ type Speaker interface {
 }
 
 type Config struct {
-	ApiKey string `yaml:"ApiKey"`
+	ApiKey      string        `yaml:"ApiKey"`
 	SendTimeout time.Duration `yaml:"SendTimeout"`
-	Listen string `yaml:"Listen"`
+	Listen      string        `yaml:"Listen"`
 
 	HelloBase64 string
 }
