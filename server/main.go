@@ -40,21 +40,5 @@ func ReadConfig() (speaker.Config, error) {
 		return config, err
 	}
 
-	helloBase64, err := ReadHello()
-	if err != nil {
-		log.Fatal("ReadHello error", err)
-	}
-
-	config.HelloBase64 = helloBase64
-
 	return config, err
-}
-
-func ReadHello() (string, error) {
-	bytes, err := ioutil.ReadFile("./hello.base64")
-	if err != nil {
-		return "", err
-	}
-
-	return string(bytes), nil
 }

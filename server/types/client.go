@@ -53,7 +53,3 @@ func (c *Client) write(mt int, message *Message) error {
 
 	return c.Ws.WriteMessage(mt, data)
 }
-
-func (t *Client) SayHello(msg *Message) {
-	t.write(websocket.TextMessage, msg)
-}

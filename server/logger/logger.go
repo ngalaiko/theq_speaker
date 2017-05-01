@@ -21,7 +21,7 @@ type logger struct {
 }
 
 func New(prefix string) Logger {
-	file, err := os.OpenFile(logsFileName, os.O_WRONLY | os.O_CREATE, 0755)
+	file, err := os.OpenFile(logsFileName, os.O_WRONLY|os.O_CREATE, 0755)
 	if err != nil {
 		panic(err)
 	}

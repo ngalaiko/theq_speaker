@@ -34,8 +34,6 @@ type Config struct {
 	ApiKey      string        `yaml:"ApiKey"`
 	SendTimeout time.Duration `yaml:"SendTimeout"`
 	Listen      string        `yaml:"Listen"`
-
-	HelloBase64 string
 }
 
 type speaker struct {
@@ -44,8 +42,6 @@ type speaker struct {
 	fetcher   fetcher.Fetcher
 	converter converter.Converter
 	sender    sender.Sender
-
-	helloBase64 string
 }
 
 func New(config Config) Speaker {
@@ -58,8 +54,6 @@ func New(config Config) Speaker {
 		fetcher:   fetcher.New(queueToConvert),
 		converter: converter.New(config.ApiKey, queueToConvert, queueToSend),
 		sender:    sender.New(queueToSend, config.SendTimeout),
-
-		helloBase64: config.HelloBase64,
 	}
 }
 
@@ -88,7 +82,6 @@ func (t *speaker) ServeWs(w http.ResponseWriter, r *http.Request) {
 		Ws:   ws,
 	}
 
-	t.sayHello(client)
 	t.sender.Register(client)
 
 	defer func() {
@@ -97,13 +90,4 @@ func (t *speaker) ServeWs(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	client.WritePump()
-}
-
-func (t *speaker) sayHello(client *types.Client) {
-	msg := &types.Message{
-		Text:   "TheQuestion",
-		Base64: t.helloBase64,
-	}
-
-	client.SayHello(msg)
 }
