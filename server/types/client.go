@@ -17,26 +17,26 @@ type Client struct {
 	Send chan *Message
 }
 
-func (c *Client) WritePump() {
+func (t *Client) WritePump() {
 	ticker := time.NewTicker(pingPeriod)
 
 	defer func() {
 		ticker.Stop()
-		c.Ws.Close()
+		t.Ws.Close()
 	}()
 
 	for {
 		select {
-		case message, ok := <-c.Send:
+		case message, ok := <-t.Send:
 			if !ok {
-				c.write(websocket.CloseMessage, nil)
+				t.write(websocket.CloseMessage, nil)
 				return
 			}
-			if err := c.write(websocket.TextMessage, message); err != nil {
+			if err := t.write(websocket.TextMessage, message); err != nil {
 				return
 			}
 		case <-ticker.C:
-			if err := c.write(websocket.PingMessage, nil); err != nil {
+			if err := t.write(websocket.PingMessage, nil); err != nil {
 				return
 			}
 		}
@@ -52,4 +52,8 @@ func (c *Client) write(mt int, message *Message) error {
 	}
 
 	return c.Ws.WriteMessage(mt, data)
+}
+
+func (t *Client) SayHello(msg *Message) {
+	t.write(websocket.TextMessage, msg)
 }

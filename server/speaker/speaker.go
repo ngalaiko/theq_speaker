@@ -88,8 +88,8 @@ func (t *speaker) ServeWs(w http.ResponseWriter, r *http.Request) {
 		Ws:   ws,
 	}
 
-	t.sender.Register(client)
 	t.sayHello(client)
+	t.sender.Register(client)
 
 	defer func() {
 		t.sender.Unregister(client)
@@ -105,5 +105,5 @@ func (t *speaker) sayHello(client *types.Client) {
 		Base64: t.helloBase64,
 	}
 
-	client.Send <- msg
+	client.SayHello(msg)
 }
