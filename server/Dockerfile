@@ -14,5 +14,6 @@ RUN dep ensure
 
 RUN go build
 
-ENTRYPOINT ["./server"]
+VOLUME ./var
 EXPOSE 7080
+ENTRYPOINT ["./server"]

@@ -44,6 +44,8 @@ type speaker struct {
 	fetcher   fetcher.Fetcher
 	converter converter.Converter
 	sender    sender.Sender
+
+	helloBase64 string
 }
 
 func New(config Config) Speaker {
@@ -55,7 +57,9 @@ func New(config Config) Speaker {
 
 		fetcher:   fetcher.New(queueToConvert),
 		converter: converter.New(config.ApiKey, queueToConvert, queueToSend),
-		sender:    sender.New(queueToSend, config.SendTimeout, config.HelloBase64),
+		sender:    sender.New(queueToSend, config.SendTimeout),
+
+		helloBase64: config.HelloBase64,
 	}
 }
 
@@ -85,6 +89,7 @@ func (t *speaker) ServeWs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t.sender.Register(client)
+	t.sayHello(client)
 
 	defer func() {
 		t.sender.Unregister(client)
@@ -92,4 +97,13 @@ func (t *speaker) ServeWs(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	client.WritePump()
+}
+
+func (t *speaker) sayHello(client *types.Client) {
+	msg := &types.Message{
+		Text:   "TheQuestion",
+		Base64: t.helloBase64,
+	}
+
+	client.Send <- msg
 }

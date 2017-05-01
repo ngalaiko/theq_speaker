@@ -1,6 +1,13 @@
 package logger
 
-import "github.com/Sirupsen/logrus"
+import (
+	"github.com/Sirupsen/logrus"
+	"os"
+)
+
+const (
+	logsFileName = "./var/log/run.log"
+)
 
 type Logger interface {
 	Info(message string, fields Fields)
@@ -14,6 +21,13 @@ type logger struct {
 }
 
 func New(prefix string) Logger {
+	file, err := os.OpenFile(logsFileName, os.O_WRONLY | os.O_CREATE, 0755)
+	if err != nil {
+		panic(err)
+	}
+
+	logrus.SetOutput(file)
+
 	return &logger{
 		prefix: prefix,
 	}
