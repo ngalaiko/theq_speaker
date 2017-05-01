@@ -7,18 +7,21 @@ Daemon that reads all new questions from [TheQuestion](https://thequestion.ru)
 ```bash
 go get -u https://github.com/ngalayko/theq_speak
 ```
-2. Install `mpg123` via `brew` or `apt`
-3. Install dependencies via [dep](https://github.com/golang/dep)
+2. Install dependencies via [dep](https://github.com/golang/dep)
 ```bash
 dep ensure
 ```
-4. Build it
+3. Build it
 ```bash
 go build main.go 
 ```
+4. Make config file
+```bash
+cp config_example.yaml config.yaml
+```
+You can get Yandex SpeechKit key [here](https://developer.tech.yandex.ru)
 5. Run it
 ```bash
 chmod +x ./main
-./main -key=yandex-api-key
+./main 
 ```
-You can get Yandex SpeechKit key [here](https://developer.tech.yandex.ru)

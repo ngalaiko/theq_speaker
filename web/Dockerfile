@@ -4,8 +4,8 @@ RUN mkdir web
 WORKDIR ./web
 ADD . ./
 
-RUN npm install
+RUN npm install || true
+RUN npm install -g @angular/cli || true
 
-ENTRYPOINT ["ng", "build", "-prod]
-VOLUME /web/dist
+ENTRYPOINT ["ng", "serve", "-prod", "--host", "galayko.rocks"]
 EXPOSE 4200
