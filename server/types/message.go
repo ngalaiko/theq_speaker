@@ -1,11 +1,6 @@
 package types
 
 type Message struct {
-	Text string `json:"text"`
-}
-
-func NewMessage(text string) Message {
-	return Message{
-		Text: text,
-	}
+	Base64 string `json:"base64"`
+	Text   string `json:"text"`
 }

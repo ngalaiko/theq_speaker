@@ -3,35 +3,91 @@ package speaker
 import (
 	"github.com/ngalayko/theq_speaker/server/converter"
 	"github.com/ngalayko/theq_speaker/server/fetcher"
+	"github.com/ngalayko/theq_speaker/server/logger"
 	"github.com/ngalayko/theq_speaker/server/sender"
 	"github.com/ngalayko/theq_speaker/server/types"
-	"golang.org/x/net/websocket"
+	"net/http"
+	"github.com/gorilla/websocket"
+	"time"
+)
+
+const (
+	maxMessageSize = 1024 * 1024
+)
+
+var (
+	upgrader = websocket.Upgrader{
+		ReadBufferSize:  maxMessageSize,
+		WriteBufferSize: maxMessageSize,
+		CheckOrigin: func(r *http.Request) bool {
+			return true
+		},
+	}
 )
 
 type Speaker interface {
-	Start(ws *websocket.Conn)
+	Start()
+	ServeWs(w http.ResponseWriter, r *http.Request)
+}
+
+type Config struct {
+	ApiKey string `yaml:"ApiKey"`
+	SendTimeout time.Duration `yaml:"SendTimeout"`
+	Listen string `yaml:"Listen"`
 }
 
 type speaker struct {
+	logger logger.Logger
+
 	fetcher   fetcher.Fetcher
 	converter converter.Converter
 	sender    sender.Sender
 }
 
-func New(apiKey string) Speaker {
+func New(config Config) Speaker {
 	queueToConvert := make(chan types.Text)
-	queueToSend := make(chan types.Message)
+	queueToSend := make(chan *types.Message)
 
 	return &speaker{
+		logger: logger.New("speaker"),
+
 		fetcher:   fetcher.New(queueToConvert),
-		converter: converter.New(apiKey, queueToConvert, queueToSend),
-		sender:    sender.New(queueToSend),
+		converter: converter.New(config.ApiKey, queueToConvert, queueToSend),
+		sender:    sender.New(queueToSend, config.SendTimeout),
 	}
 }
 
-func (t *speaker) Start(ws *websocket.Conn) {
+func (t *speaker) Start() {
 	go t.fetcher.FetchLoop()
 	go t.converter.ConvertLoop()
+	go t.sender.SendLoop()
+}
 
-	t.sender.SendLoop(ws)
+func (t *speaker) ServeWs(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		http.Error(w, "Method not allowed", 405)
+		return
+	}
+
+	ws, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		t.logger.Error("Upgrade error", logger.Fields{
+			"error": err,
+		})
+		return
+	}
+
+	client := &types.Client{
+		Send: make(chan *types.Message, maxMessageSize),
+		Ws:   ws,
+	}
+
+	t.sender.Register(client)
+
+	defer func() {
+		t.sender.Unregister(client)
+		client.Ws.Close()
+	}()
+
+	client.WritePump()
 }

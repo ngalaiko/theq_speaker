@@ -1,18 +1,21 @@
 import { Component } from '@angular/core';
 import { WebsocketService } from './services/websocket/websocket.service';
-import { ChatService } from './services/chat/chat.service';
+import { AudioService } from './services/audio/audio.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  providers: [ WebsocketService, ChatService ]
+  providers: [ WebsocketService, AudioService ]
 })
 
 export class AppComponent {
-  constructor(private chatService: ChatService) {
+  public current: string;
+
+  constructor(private chatService: AudioService) {
     chatService.messages.subscribe(msg => {
-      console.log("Response from websocket: " + msg.text);
+      this.current = msg.text;
+      msg.audio.play();
     });
   }
 }

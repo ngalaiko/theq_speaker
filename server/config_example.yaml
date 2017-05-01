@@ -1,0 +1,3 @@
+ApiKey: ""
+SendTimeout: "10s"
+Listen: ":1234"

@@ -6,4 +6,6 @@ ADD . ./
 
 RUN npm install
 
-ENTRYPOINT ["ng", "serve"]
+ENTRYPOINT ["ng", "build", "-prod]
+VOLUME /web/dist
+EXPOSE 4200

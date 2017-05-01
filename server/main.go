@@ -1,30 +1,44 @@
 package main
 
 import (
-	"flag"
-	"fmt"
 	"github.com/ngalayko/theq_speaker/server/speaker"
-	"golang.org/x/net/websocket"
 	"log"
 	"net/http"
+	"io/ioutil"
+	"gopkg.in/yaml.v2"
 )
 
-var (
-	key = flag.String("key", "", "Yandex SpeechKit API key")
+const (
+	configPath = "./config.yaml"
 )
 
 func main() {
-	flag.Parse()
-	if len(*key) == 0 {
-		fmt.Println("You should use -key flag")
-		return
+	config, err := ReadConfig()
+	if err != nil {
+		log.Fatal("ReadConfig error", err)
 	}
 
-	s := speaker.New(*key)
+	s := speaker.New(config)
+	go s.Start()
 
-	http.Handle("/", websocket.Handler(s.Start))
+	http.HandleFunc("/", s.ServeWs)
 
-	if err := http.ListenAndServe(":1234", nil); err != nil {
+	if err := http.ListenAndServe(config.Listen, nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}
+}
+
+func ReadConfig() (speaker.Config, error) {
+	config := speaker.Config{}
+
+	bytes, err := ioutil.ReadFile(configPath)
+	if err != nil {
+		return config, err
+	}
+
+	if err := yaml.Unmarshal(bytes, &config); err != nil {
+		return config, err
+	}
+
+	return config, err
 }

@@ -42,7 +42,11 @@ func New(queueToConvert chan types.Text) Fetcher {
 func (t *fetcher) FetchLoop() {
 	defer func() {
 		recover()
+
+		t.logger.Info("FetchLoop recovered", logger.Fields{})
 	}()
+
+	t.logger.Info("FetchLoop started", logger.Fields{})
 
 	for {
 		if err := t.fetchNext(questionsLimit); err != nil {
@@ -76,7 +80,7 @@ func (t *fetcher) fetchNext(limit int32) error {
 
 		t.queueToConvert <- question
 
-		t.logger.Info("Text converted", logger.Fields{
+		t.logger.Info("Question fetched", logger.Fields{
 			"question": question,
 		})
 	}

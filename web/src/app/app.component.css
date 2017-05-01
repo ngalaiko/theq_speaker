@@ -1,0 +1,12 @@
+h1 {
+  font-family: "futura-pt", serif;
+  left: 50%;
+  top: 50%;
+  font-size: 52px;
+  font-weight: 300;
+  color: #000;
+  text-align: center;
+
+  margin: 15%;
+  padding: 5%;
+}

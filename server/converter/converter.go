@@ -1,22 +1,20 @@
 package converter
 
 import (
-	"fmt"
+	"encoding/base64"
 	"github.com/ngalayko/theq_speaker/server/logger"
 	"github.com/ngalayko/theq_speaker/server/types"
-	"io"
+	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"net/url"
-	"os"
 	"time"
 )
 
 const (
 	apiURL = "https://tts.voicetech.yandex.net/generate"
 
-	fileNameLength = 5
-	fileFormat     = "mp3"
+	fileFormat = "wav"
 )
 
 var (
@@ -34,10 +32,10 @@ type converter struct {
 	apiKey string
 
 	queueToConvert chan types.Text
-	queueToSend    chan types.Message
+	queueToSend    chan *types.Message
 }
 
-func New(apiKey string, queueToConvert chan types.Text, queueToSend chan types.Message) Converter {
+func New(apiKey string, queueToConvert chan types.Text, queueToSend chan *types.Message) Converter {
 	return &converter{
 		logger: logger.New("converter"),
 
@@ -51,7 +49,11 @@ func New(apiKey string, queueToConvert chan types.Text, queueToSend chan types.M
 func (t *converter) ConvertLoop() {
 	defer func() {
 		recover()
+
+		t.logger.Info("ConvertLoop recovered", logger.Fields{})
 	}()
+
+	t.logger.Info("ConvertLoop started", logger.Fields{})
 
 	for question := range t.queueToConvert {
 		if err := t.convert(question.String(), question.Gender()); err != nil {
@@ -73,17 +75,18 @@ func (t *converter) convert(text string, gender types.Gender) error {
 		"&lang=ru" +
 		"&speaker=" + t.chooseVoice(gender)
 
-	randomString := RandStringBytesMaskImprSrc(fileNameLength)
-	fileName := fmt.Sprintf("%v.%v", randomString, fileFormat)
-	if err := t.downloadFromURL(requestURL, fileName); err != nil {
+	base64String, err := t.downloadFromURL(requestURL)
+	if err != nil {
 		return err
 	}
 
-	t.queueToSend <- types.NewMessage(fileName)
+	t.queueToSend <- &types.Message{
+		Base64: base64String,
+		Text:   text,
+	}
 
 	t.logger.Info("Text converted", logger.Fields{
-		"text":     text,
-		"fileName": fileName,
+		"text": text,
 	})
 
 	return nil
@@ -102,22 +105,17 @@ func (t *converter) chooseVoice(gender types.Gender) string {
 	}
 }
 
-func (t *converter) downloadFromURL(url string, fileName string) error {
-	file, err := os.Create(fileName)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
+func (t *converter) downloadFromURL(url string) (string, error) {
 	response, err := http.Get(url)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer response.Body.Close()
 
-	if _, err := io.Copy(file, response.Body); err != nil {
-		return err
+	bytes, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return "", nil
 	}
 
-	return nil
+	return base64.StdEncoding.EncodeToString(bytes), nil
 }

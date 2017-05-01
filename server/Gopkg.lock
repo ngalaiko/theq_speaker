@@ -1,4 +1,4 @@
-memo = "6ccaba3f4c2c9a7d17e41b997798def8d3a3e98986632a233c025aca45af428f"
+memo = "b212a6a8c27907cd0037f4dbb91c0eebba0e77cb8113f8ae34bef3be5fd7c6a8"
 
 [[projects]]
   name = "github.com/Sirupsen/logrus"
@@ -7,13 +7,19 @@ memo = "6ccaba3f4c2c9a7d17e41b997798def8d3a3e98986632a233c025aca45af428f"
   version = "v0.11.5"
 
 [[projects]]
-  branch = "master"
-  name = "golang.org/x/net"
-  packages = ["websocket"]
-  revision = "da118f7b8e5954f39d0d2130ab35d4bf0e3cb344"
+  name = "github.com/gorilla/websocket"
+  packages = ["."]
+  revision = "3ab3a8b8831546bd18fd182c20687ca853b2bb13"
+  version = "v1.1.0"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
   revision = "9ccfe848b9db8435a24c424abbc07a921adf1df5"
+
+[[projects]]
+  branch = "v2"
+  name = "gopkg.in/yaml.v2"
+  packages = ["."]
+  revision = "cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b"
