@@ -20,6 +20,7 @@ go build main.go
 cp config_example.yaml config.yaml
 ```
 You can get Yandex SpeechKit key [here](https://developer.tech.yandex.ru)
+
 5. Run it
 ```bash
 chmod +x ./main

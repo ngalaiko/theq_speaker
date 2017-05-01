@@ -23,9 +23,11 @@ type sender struct {
 	queueToSend chan *types.Message
 
 	timeout time.Duration
+
+	helloBase64 string
 }
 
-func New(queueToSend chan *types.Message, timeout time.Duration) Sender {
+func New(queueToSend chan *types.Message, timeout time.Duration, helloBase64 string) Sender {
 	return &sender{
 		logger: logger.New("sender"),
 
@@ -36,6 +38,8 @@ func New(queueToSend chan *types.Message, timeout time.Duration) Sender {
 		queueToSend: queueToSend,
 
 		timeout: timeout,
+
+		helloBase64: helloBase64,
 	}
 }
 
@@ -90,6 +94,9 @@ func (t *sender) broadcast(message *types.Message) {
 
 func (t *sender) addClient(client *types.Client) {
 	t.clients[client] = true
+
+	t.sayHello(client)
+
 	t.logger.Info("Client registred", logger.Fields{
 		"clients": len(t.clients),
 	})
@@ -102,4 +109,13 @@ func (t *sender) deleteClient(client *types.Client) {
 	t.logger.Info("Client unregistred", logger.Fields{
 		"clients": len(t.clients),
 	})
+}
+
+func (t *sender) sayHello(client *types.Client) {
+	msg := &types.Message{
+		Text: "TheQuestion",
+		Base64: t.helloBase64,
+	}
+
+	client.Send <- msg
 }

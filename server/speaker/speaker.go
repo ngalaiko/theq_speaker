@@ -34,6 +34,8 @@ type Config struct {
 	ApiKey string `yaml:"ApiKey"`
 	SendTimeout time.Duration `yaml:"SendTimeout"`
 	Listen string `yaml:"Listen"`
+
+	HelloBase64 string
 }
 
 type speaker struct {
@@ -53,7 +55,7 @@ func New(config Config) Speaker {
 
 		fetcher:   fetcher.New(queueToConvert),
 		converter: converter.New(config.ApiKey, queueToConvert, queueToSend),
-		sender:    sender.New(queueToSend, config.SendTimeout),
+		sender:    sender.New(queueToSend, config.SendTimeout, config.HelloBase64),
 	}
 }
 

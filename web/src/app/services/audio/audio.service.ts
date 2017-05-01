@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Rx';
 import { WebsocketService } from '../websocket/websocket.service';
 
-const CHAT_URL = 'ws://localhost:7080';
+const CHAT_URL = 'wss://ws.galayko.rocks';
 
 export interface Message {
   text: string,
