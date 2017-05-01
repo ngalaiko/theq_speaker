@@ -7,5 +7,6 @@ ADD . ./
 RUN npm install || true
 RUN npm install -g @angular/cli || true
 
-ENTRYPOINT ["ng", "serve", "-prod", "--host", "galayko.rocks"]
+VOLUME ./web/dst
 EXPOSE 4200
+ENTRYPOINT ["ng", "build", "-prod"]
