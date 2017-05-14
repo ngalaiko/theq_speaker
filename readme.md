@@ -1,3 +1,3 @@
 # TheQuetion Speaker
 
-[See](https://speaker.galayko.rocks) 
+[See](https://speaker.galayko.rocks) (disabled)
