@@ -1,0 +1,10 @@
+pipeline:
+  build:
+    image: docker:stable
+    commands:
+     - docker build ./server -t docker.galayko.rocks/speaker-server
+     - docker push docker.galayko.rocks/speaker-server
+     - docker build ./web -t docker.galayko.rocks/speaker-web
+     - docker push docker.galayko.rocks/speaker-web
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
